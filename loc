@@ -1,110 +1,86 @@
-local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/Vape.txt"))() -- funnedevmen here, Hi, credits to whoever made this lib cuz i def didnt make it lol
+-- List of valid keys (this can be extended infinitely)
+local validKeys = {
+    "OwnerKey123",  -- Example of a predefined key (you can add more)
+    "AnotherKey456",  -- Example of a second key
+    "ThirdKey789",    -- Example of a third key
+    -- You can continue to add more keys as needed
+}
 
-local win = lib:Window("Maximum", Color3.fromRGB(44, 120, 224), Enum.KeyCode.RightControl)
+-- Variable to track if the key has been entered correctly
+local keyEntered = false
 
-local tab = win:Tab("Mag")
-
+-- Create the UI
 local player = game.Players.LocalPlayer
-local rs = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local playerGui = player:WaitForChild("PlayerGui")
 
-local activationDistance = 7  -- Adjust this to your desired activation distance
-local catchHitboxSize = 7  -- Adjust this to your desired catch hitbox size
+-- ScreenGui to hold the UI components
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = playerGui
+screenGui.Name = "KeyEntryGui"
 
-function magBall(ball)
-if ball and player.Character then
-local leftArm = player.Character["Left Arm"]
-local rightArm = player.Character["Right Arm"]
+-- TextBox for entering the key
+local textBox = Instance.new("TextBox")
+textBox.Parent = screenGui
+textBox.Size = UDim2.new(0, 400, 0, 50)
+textBox.Position = UDim2.new(0.5, -200, 0.5, -25)
+textBox.PlaceholderText = "Enter access key"
+textBox.TextSize = 24
+textBox.ClearTextOnFocus = true
 
-leftArm.Size = Vector3.new(catchHitboxSize, catchHitboxSize, catchHitboxSize)
-rightArm.Size = Vector3.new(catchHitboxSize, catchHitboxSize, catchHitboxSize)
+-- Button to submit the key
+local submitButton = Instance.new("TextButton")
+submitButton.Parent = screenGui
+submitButton.Size = UDim2.new(0, 400, 0, 50)
+submitButton.Position = UDim2.new(0.5, -200, 0.5, 40)
+submitButton.Text = "Submit"
+submitButton.TextSize = 24
+submitButton.BackgroundColor3 = Color3.fromRGB(44, 120, 224)
 
-firetouchinterest(leftArm, ball, 0)
-firetouchinterest(rightArm, ball, 0)
-task.wait()
-firetouchinterest(leftArm, ball, 1)
-firetouchinterest(rightArm, ball, 1)
+-- TextLabel to show messages (like error or success)
+local messageLabel = Instance.new("TextLabel")
+messageLabel.Parent = screenGui
+messageLabel.Size = UDim2.new(0, 400, 0, 30)
+messageLabel.Position = UDim2.new(0.5, -200, 0.5, 100)
+messageLabel.Text = ""
+messageLabel.TextSize = 20
+messageLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Red for error messages
+
+-- Function to check if the entered key matches any valid key in the list
+local function checkKey(inputKey)
+    -- Check if the inputKey is in the validKeys list
+    for _, key in pairs(validKeys) do
+        if inputKey == key then
+            keyEntered = true
+            messageLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Green for success
+            messageLabel.Text = "Correct key entered. Access granted!"
+            submitButton.Text = "Access Granted!"  -- Change button text after access is granted
+            -- Run the script once the key is entered correctly
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/jayso-com/UF-script/refs/heads/main/loc"))()
+
+            -- Destroy the UI after key is correct
+            screenGui:Destroy()
+            return
+        end
+    end
+
+    -- If no key matches, display an error message
+    keyEntered = false
+    messageLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Red for error
+    messageLabel.Text = "Incorrect key. Try again."
 end
-end
 
-function teleportBall(ball)
-if ball and player.Character then
-local leftArm = player.Character["Left Arm"]
-local rightArm = player.Character["Right Arm"]
-
-local leftDistance = (leftArm.Position - ball.Position).Magnitude
-local rightDistance = (rightArm.Position - ball.Position).Magnitude
-
-if leftDistance <= catchHitboxSize then
-ball.CFrame = leftArm.CFrame
-elseif rightDistance <= catchHitboxSize then
-ball.CFrame = rightArm.CFrame
-end
-end
-end
-
-local function drawHitbox()
-local hitbox = Instance.new("Part")
-hitbox.Size = Vector3.new(catchHitboxSize, catchHitboxSize, catchHitboxSize)
-hitbox.Anchored = true
-hitbox.CanCollide = false
-hitbox.Parent = player.Character.Torso
-end
-
-tab:Slider("Catch Hitbox Size", 1, 100, 10, function(value)
-catchHitboxSize = value
-local hitbox = player.Character:FindFirstChild("Hitbox")
-if hitbox then
-hitbox.Size = Vector3.new(value, value, value)
-end
+-- Event for the submit button
+submitButton.MouseButton1Click:Connect(function()
+    local userInput = textBox.Text
+    checkKey(userInput)  -- Check if the entered key is correct
 end)
 
-local function autoTuck()
-while true do
-if player.Character:FindFirstChild("Football") or game.Players.LocalPlayer.Name == "jaywsson" then
-UIS.InputBegan:Fire(Enum.KeyCode.Q)
-end
-wait(0.1)
-end
-end
-
-tab:Bind("Auto Tuck", Enum.KeyCode.Q, Enum.KeyCode.E, Enum.KeyCode.R, autoTuck)
-
-rs.Stepped:Connect(function()
-if not game:GetService("ReplicatedStorage").Values.HomeQB.Value:match(player.Name) and not game:GetService("ReplicatedStorage").Values.AwayQB.Value:match(player.Name) then
-for i,v in pairs(workspace:GetChildren()) do
-if v.Name == "Football" and v:IsA("BasePart") then
-local mag = (player.Character.Torso.Position - v.Position).Magnitude
-if mag <= catchHitboxSize then
-teleportBall(v)
-print('Ball is teleporting to you!')
-end
-end
-end
-end
-if player.Character.Torso then
-local hitbox = player.Character:FindFirstChild("Hitbox")
-if hitbox then
-hitbox.Position = player.Character.Torso.Position
-end
-end
+-- Optional: Clear the text field if clicked
+textBox.Focused:Connect(function()
+    messageLabel.Text = ""  -- Clear the message when the user starts typing
 end)
 
-local changeclr = win:Tab("Change UI Color")
-changeclr:Colorpicker("Change UI Color",Color3.fromRGB(44, 120, 224), function(t)
-lib:ChangePresetColor(Color3.fromRGB(t.R * 255,  t.G * 255, t.B * 255))
-end)
-
--- Teleport Ball to Player
-rs.Stepped:Connect(function()
-for _, v in pairs(workspace:GetChildren()) do
-if v.Name == "Football" and v:IsA("BasePart") then
-local mag = (player.Character.Torso.Position - v.Position).Magnitude
-if mag <= catchHitboxSize then
-teleportBall(v)
-print('Ball is teleporting to you automatically!')
-end
-end
-end
-end)
+-- You can dynamically add more keys to the validKeys table
+table.insert(validKeys, "NewDynamicKey123")  -- Example of adding a new key
+table.insert(validKeys, "AnotherNewKey456")  -- Example of adding another key
+-- Continue adding as many keys as you want in the validKeys table

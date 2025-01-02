@@ -1,0 +1,110 @@
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/Vape.txt"))() -- funnedevmen here, Hi, credits to whoever made this lib cuz i def didnt make it lol
+
+local win = lib:Window("Maximum", Color3.fromRGB(44, 120, 224), Enum.KeyCode.RightControl)
+
+local tab = win:Tab("Mag")
+
+local player = game.Players.LocalPlayer
+local rs = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local activationDistance = 7  -- Adjust this to your desired activation distance
+local catchHitboxSize = 7  -- Adjust this to your desired catch hitbox size
+
+function magBall(ball)
+if ball and player.Character then
+local leftArm = player.Character["Left Arm"]
+local rightArm = player.Character["Right Arm"]
+
+leftArm.Size = Vector3.new(catchHitboxSize, catchHitboxSize, catchHitboxSize)
+rightArm.Size = Vector3.new(catchHitboxSize, catchHitboxSize, catchHitboxSize)
+
+firetouchinterest(leftArm, ball, 0)
+firetouchinterest(rightArm, ball, 0)
+task.wait()
+firetouchinterest(leftArm, ball, 1)
+firetouchinterest(rightArm, ball, 1)
+end
+end
+
+function teleportBall(ball)
+if ball and player.Character then
+local leftArm = player.Character["Left Arm"]
+local rightArm = player.Character["Right Arm"]
+
+local leftDistance = (leftArm.Position - ball.Position).Magnitude
+local rightDistance = (rightArm.Position - ball.Position).Magnitude
+
+if leftDistance <= catchHitboxSize then
+ball.CFrame = leftArm.CFrame
+elseif rightDistance <= catchHitboxSize then
+ball.CFrame = rightArm.CFrame
+end
+end
+end
+
+local function drawHitbox()
+local hitbox = Instance.new("Part")
+hitbox.Size = Vector3.new(catchHitboxSize, catchHitboxSize, catchHitboxSize)
+hitbox.Anchored = true
+hitbox.CanCollide = false
+hitbox.Parent = player.Character.Torso
+end
+
+tab:Slider("Catch Hitbox Size", 1, 100, 10, function(value)
+catchHitboxSize = value
+local hitbox = player.Character:FindFirstChild("Hitbox")
+if hitbox then
+hitbox.Size = Vector3.new(value, value, value)
+end
+end)
+
+local function autoTuck()
+while true do
+if player.Character:FindFirstChild("Football") or game.Players.LocalPlayer.Name == "jaywsson" then
+UIS.InputBegan:Fire(Enum.KeyCode.Q)
+end
+wait(0.1)
+end
+end
+
+tab:Bind("Auto Tuck", Enum.KeyCode.Q, Enum.KeyCode.E, Enum.KeyCode.R, autoTuck)
+
+rs.Stepped:Connect(function()
+if not game:GetService("ReplicatedStorage").Values.HomeQB.Value:match(player.Name) and not game:GetService("ReplicatedStorage").Values.AwayQB.Value:match(player.Name) then
+for i,v in pairs(workspace:GetChildren()) do
+if v.Name == "Football" and v:IsA("BasePart") then
+local mag = (player.Character.Torso.Position - v.Position).Magnitude
+if mag <= catchHitboxSize then
+teleportBall(v)
+print('Ball is teleporting to you!')
+end
+end
+end
+end
+if player.Character.Torso then
+local hitbox = player.Character:FindFirstChild("Hitbox")
+if hitbox then
+hitbox.Position = player.Character.Torso.Position
+end
+end
+end)
+
+local changeclr = win:Tab("Change UI Color")
+changeclr:Colorpicker("Change UI Color",Color3.fromRGB(44, 120, 224), function(t)
+lib:ChangePresetColor(Color3.fromRGB(t.R * 255,  t.G * 255, t.B * 255))
+end)
+
+-- Teleport Ball to Player
+rs.Stepped:Connect(function()
+for _, v in pairs(workspace:GetChildren()) do
+if v.Name == "Football" and v:IsA("BasePart") then
+local mag = (player.Character.Torso.Position - v.Position).Magnitude
+if mag <= catchHitboxSize then
+teleportBall(v)
+print('Ball is teleporting to you automatically!')
+end
+end
+end
+end)

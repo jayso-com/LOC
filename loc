@@ -1,8 +1,15 @@
 -- List of valid keys (this can be extended infinitely)
 local validKeys = {
-    "OwnerKey123",  -- Example of a predefined key (you can add more)
-    "AnotherKey456",  -- Example of a second key
-    "ThirdKey789",    -- Example of a third key
+    "KEYAUTH-z4LEKC-jG5QlJ-R7Vpgi-VReWQg-370fSE-5IDGQA",  -- Example of a predefined key (you can add more)
+    "KEYAUTH-z35gjx-RhS8Qg-5esIXU-3h22KT-LFWojl-whozUZ",  -- Example of a second key
+    "KEYAUTH-W3XpRY-zElM4v-Zr8Jo1-EnvcEl-Vgaz0i-5hd8x8",    -- Example of a third key
+    "KEYAUTH-r2t1ov-dFarEr-7faxzx-EOTkgf-3XoIFr-9WzZU3",    -- Example of a third key
+    "KEYAUTH-LiWg5p-lQLd4D-6i7ZoB-86RChz-HyLb77-GvrQRz",    -- Example of a third key
+    "KEYAUTH-j8Wfil-UOeiOy-kxFHWC-Wsvhby-3kuBHX-KOjepb",    -- Example of a third key
+    "KEYAUTH-iy5uc4-etQwsx-WiUEUI-qRqUGz-TxRrMy-vz4wZS",    -- Example of a third key
+    "KEYAUTH-eFn6Q4-vtnACs-eypudZ-uetNvN-W0tshh-LXv6y5",    -- Example of a third key
+    "KEYAUTH-4xxS7L-BmrNLI-bTZuvI-dLkHFf-Hl0WaC-VfVty6",    -- Example of a third key
+    "KEYAUTH-0vNkd7-soHw3X-qjsic9-Vdt8jP-RGV3xd-5iybY5",    -- Example of a third key
     -- You can continue to add more keys as needed
 }
 
